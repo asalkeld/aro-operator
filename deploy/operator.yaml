@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: aro-operator
+  namespace: default
 spec:
   replicas: 1
   selector:
@@ -22,9 +23,6 @@ spec:
           imagePullPolicy: Always
           env:
             - name: WATCH_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
             - name: POD_NAME
               valueFrom:
                 fieldRef:
