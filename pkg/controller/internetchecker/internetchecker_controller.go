@@ -1,6 +1,7 @@
 package internetchecker
 
 import (
+	"net/http"
 	"time"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -15,9 +16,13 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
+
+	"github.com/asalkeld/aro-operator/pkg/controller/statusreporter"
 )
 
-var log = logf.Log.WithName("controller_internetchecker")
+var (
+	log = logf.Log.WithName("controller_internetchecker")
+)
 
 // Add creates a new Secret Controller and adds it to the Manager. The Manager will set fields on the Controller
 // and Start it when the Manager is Started.
@@ -46,7 +51,7 @@ func add(mgr manager.Manager, r reconcile.Reconciler, stopCh <-chan struct{}) er
 			select {
 			case <-ticker.C:
 				events <- event.GenericEvent{
-					Meta:   &metav1.ObjectMeta{},
+					Meta:   &metav1.ObjectMeta{Name: "cluster", Namespace: "default"},
 					Object: &unstructured.Unstructured{},
 				}
 			case <-stopCh:
@@ -80,5 +85,32 @@ func (r *internetChecker) Reconcile(request reconcile.Request) (reconcile.Result
 
 func (r *internetChecker) pollEvent(ev event.GenericEvent) bool {
 	log.Info("Polling")
+	// https://github.com/Azure/OpenShift/issues/185
+
+	req, err := http.NewRequest("GET", "https://redhat.com", nil)
+	if err != nil {
+		log.Error(err, "failed building request")
+		return false
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	_, err = client.Do(req)
+	if err != nil {
+		log.Error(err, "sending request")
+		sr := statusreporter.NewStatusReporter(r.client, ev.Meta.GetNamespace(), ev.Meta.GetName())
+		err = sr.SetNoInternetConnection(err)
+		if err != nil {
+			log.Error(err, "SetNoInternetConnection")
+		}
+		return true
+	}
+	log.Info("setting to internet connected")
+	sr := statusreporter.NewStatusReporter(r.client, ev.Meta.GetNamespace(), ev.Meta.GetName())
+	err = sr.SetInternetConnected()
+	if err != nil {
+		log.Error(err, "SetInternetConnected")
+	}
+
 	return true
 }

@@ -12,7 +12,6 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
@@ -91,13 +90,6 @@ func (r *ReconcileSecret) Reconcile(request reconcile.Request) (reconcile.Result
 
 	// Define a new pull secret object
 	ps := newPullSecret(instance)
-
-	// TODO check this
-	// Set Secret instance as the owner and controller
-	if err := controllerutil.SetControllerReference(instance, ps, r.scheme); err != nil {
-		return reconcile.Result{}, err
-	}
-
 	isCreate := false
 	found := &corev1.Secret{}
 	err = r.client.Get(context.TODO(), types.NamespacedName{Name: ps.Name, Namespace: ps.Namespace}, found)
