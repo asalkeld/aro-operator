@@ -22,3 +22,12 @@
 ### Decentralizing ARO customization management
 
 * take over install customizations
+
+## dev help
+
+```sh
+export OPERATOR_NAME=aro-operator
+operator-sdk run --local --kubeconfig $KUBECONFIG --watch-namespace=""
+```
+
+see: https://sdk.operatorframework.io/docs/golang/quickstart/

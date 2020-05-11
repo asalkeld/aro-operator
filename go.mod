@@ -3,6 +3,7 @@ module github.com/asalkeld/aro-operator
 go 1.13
 
 require (
+	github.com/Azure/ARO-RP v0.0.0-20200507154943-98a37a303b96
 	github.com/operator-framework/operator-sdk v0.17.1-0.20200508235800-4e2c562a3d29
 	github.com/spf13/pflag v1.0.5
 	k8s.io/api v0.18.2
