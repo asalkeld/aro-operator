@@ -6,15 +6,27 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+const SingletonClusterName = "cluster"
+
 var (
 	InternetReachable  status.ConditionType = "InternetReachable"
 	ClusterSupportable status.ConditionType = "ClusterSupportable"
 )
 
+type GenevaLoggingSpec struct {
+	Namespace                string `json:"namespace,omitempty"`
+	ConfigVersion            string `json:"configVersion,omitempty"`
+	MonitoringTenant         string `json:"monitoringTenant,omitempty"`
+	MonitoringGCSRegion      string `json:"monitoringGCSRegion,omitempty"`
+	MonitoringGCSEnvironment string `json:"monitoringGCSEnvironment,omitempty"`
+}
+
 // ClusterSpec defines the desired state of Cluster
 type ClusterSpec struct {
 	// ResourceID is the Azure resourceId of the cluster
-	ResourceID string `json:"resourceId,omitempty"`
+	ResourceID    string            `json:"resourceId,omitempty"`
+	ACRName       string            `json:"acrName,omitempty"`
+	GenevaLogging GenevaLoggingSpec `json:"genevaLogging,omitempty"`
 }
 
 // ClusterStatus defines the observed state of Cluster

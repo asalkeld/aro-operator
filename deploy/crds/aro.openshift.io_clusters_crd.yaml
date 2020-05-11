@@ -31,6 +31,21 @@ spec:
           spec:
             description: ClusterSpec defines the desired state of Cluster
             properties:
+              acrName:
+                type: string
+              genevaLogging:
+                properties:
+                  configVersion:
+                    type: string
+                  monitoringGCSEnvironment:
+                    type: string
+                  monitoringGCSRegion:
+                    type: string
+                  monitoringTenant:
+                    type: string
+                  namespace:
+                    type: string
+                type: object
               resourceId:
                 description: ResourceID is the Azure resourceId of the cluster
                 type: string

@@ -17,6 +17,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 
+	aro "github.com/asalkeld/aro-operator/pkg/apis/aro/v1alpha1"
 	"github.com/asalkeld/aro-operator/pkg/controller/statusreporter"
 )
 
@@ -51,7 +52,7 @@ func add(mgr manager.Manager, r reconcile.Reconciler, stopCh <-chan struct{}) er
 			select {
 			case <-ticker.C:
 				events <- event.GenericEvent{
-					Meta:   &metav1.ObjectMeta{Name: "cluster", Namespace: "default"},
+					Meta:   &metav1.ObjectMeta{Name: aro.SingletonClusterName, Namespace: "default"},
 					Object: &unstructured.Unstructured{},
 				}
 			case <-stopCh:
