@@ -94,7 +94,7 @@ func main() {
 
 	// Set default manager options
 	options := manager.Options{
-		Namespace:          namespace, 
+		Namespace:          namespace,
 		MetricsBindAddress: fmt.Sprintf("%s:%d", metricsHost, metricsPort),
 	}
 
@@ -122,8 +122,10 @@ func main() {
 		os.Exit(1)
 	}
 
+	stopCh := signals.SetupSignalHandler()
+
 	// Setup all Controllers
-	if err := controller.AddToManager(mgr); err != nil {
+	if err := controller.AddToManager(mgr, stopCh); err != nil {
 		log.Error(err, "")
 		os.Exit(1)
 	}
@@ -134,7 +136,7 @@ func main() {
 	log.Info("Starting the Cmd.")
 
 	// Start the Cmd
-	if err := mgr.Start(signals.SetupSignalHandler()); err != nil {
+	if err := mgr.Start(stopCh); err != nil {
 		log.Error(err, "Manager exited non-zero")
 		os.Exit(1)
 	}

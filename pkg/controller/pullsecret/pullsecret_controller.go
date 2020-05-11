@@ -24,7 +24,7 @@ var log = logf.Log.WithName("controller_pullsecret")
 
 // Add creates a new Secret Controller and adds it to the Manager. The Manager will set fields on the Controller
 // and Start it when the Manager is Started.
-func Add(mgr manager.Manager) error {
+func Add(mgr manager.Manager, stopCh <-chan struct{}) error {
 	return add(mgr, newReconciler(mgr))
 }
 
